@@ -1,0 +1,15 @@
+{
+  "rows_analyzed": 30626,
+  "volume_rows_source": "api_daily_counts",
+  "date_min": "2024-01-01",
+  "date_max": "2024-03-31",
+  "days": 91,
+  "boroughs": 6,
+  "agencies": 14,
+  "complaint_types": 117,
+  "median_response_hours": 1.42,
+  "p90_response_hours": 67.82,
+  "within_48h_rate": 0.8637,
+  "forecast_mape": 0.058,
+  "anomaly_days": 4
+}
