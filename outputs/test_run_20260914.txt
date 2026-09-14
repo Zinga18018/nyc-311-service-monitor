@@ -1,0 +1,64 @@
+test_aggregate_only_days_are_not_dropped (test_analysis.AnalysisTests.test_aggregate_only_days_are_not_dropped) ... ok
+test_all_open_window_has_null_closure_metrics (test_analysis.AnalysisTests.test_all_open_window_has_null_closure_metrics) ... ok
+test_build_analysis_outputs_core_tables (test_analysis.AnalysisTests.test_build_analysis_outputs_core_tables) ... ok
+test_clean_requests_adds_response_hours (test_analysis.AnalysisTests.test_clean_requests_adds_response_hours) ... ok
+test_complete_calendar_keeps_zero_demand_days (test_analysis.AnalysisTests.test_complete_calendar_keeps_zero_demand_days) ... ok
+test_empty_completed_window_is_valid_without_nan_json (test_analysis.AnalysisTests.test_empty_completed_window_is_valid_without_nan_json) ... ok
+test_holdout_spike_cannot_change_training_calibration (test_analysis.AnalysisTests.test_holdout_spike_cannot_change_training_calibration) ... ok
+test_open_and_invalid_closures_keep_volume_and_long_tail_is_retained (test_analysis.AnalysisTests.test_open_and_invalid_closures_keep_volume_and_long_tail_is_retained) ... ok
+test_unknown_aggregate_day_is_not_filled_as_zero (test_analysis.AnalysisTests.test_unknown_aggregate_day_is_not_filled_as_zero) ... ok
+test_all_open_data_renders_null_closure_metrics (test_dashboard.DashboardTests.test_all_open_data_renders_null_closure_metrics) ... 2026-09-14 10:49:49.002 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-09-14 10:49:51.898 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-09-14 10:49:51.902 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-09-14 10:49:51.904 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+ok
+test_legacy_snapshot_displays_bias_warning_and_no_backlog_claim (test_dashboard.DashboardTests.test_legacy_snapshot_displays_bias_warning_and_no_backlog_claim) ... 2026-09-14 10:49:51.956 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-09-14 10:49:52.213 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-09-14 10:49:52.216 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-09-14 10:49:52.217 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-09-14 10:49:52.220 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+ok
+test_bad_closure_flagged_without_losing_demand_record (test_warehouse.WarehouseTests.test_bad_closure_flagged_without_losing_demand_record) ... ok
+test_changed_status_updates_fact_and_preserves_raw_history (test_warehouse.WarehouseTests.test_changed_status_updates_fact_and_preserves_raw_history) ... ok
+test_completed_resume_is_noop_and_changed_metadata_rejected (test_warehouse.WarehouseTests.test_completed_resume_is_noop_and_changed_metadata_rejected) ... ok
+test_nonadvancing_source_fails_instead_of_looping (test_warehouse.WarehouseTests.test_nonadvancing_source_fails_instead_of_looping) ... ok
+test_page_failure_rolls_back_raw_stage_and_checkpoint_then_resumes (test_warehouse.WarehouseTests.test_page_failure_rolls_back_raw_stage_and_checkpoint_then_resumes) ... ok
+test_paginates_past_daily_limit_and_keeps_open_and_long_closures (test_warehouse.WarehouseTests.test_paginates_past_daily_limit_and_keeps_open_and_long_closures) ... ok
+test_query_keeps_all_statuses_and_uses_unique_key_tiebreaker (test_warehouse.WarehouseTests.test_query_keeps_all_statuses_and_uses_unique_key_tiebreaker) ... ok
+test_replay_does_not_duplicate_facts_or_versions (test_warehouse.WarehouseTests.test_replay_does_not_duplicate_facts_or_versions) ... ok
+test_source_failure_keeps_checkpoint_for_resume (test_warehouse.WarehouseTests.test_source_failure_keeps_checkpoint_for_resume) ... ok
+test_synthetic_end_to_end_backfill_and_recovery_proof (test_warehouse.WarehouseTests.test_synthetic_end_to_end_backfill_and_recovery_proof) ... ok
+test_tied_timestamps_use_source_text_key_order (test_warehouse.WarehouseTests.test_tied_timestamps_use_source_text_key_order) ... ok
+
+----------------------------------------------------------------------
+Ran 22 tests in 4.631s
+
+OK

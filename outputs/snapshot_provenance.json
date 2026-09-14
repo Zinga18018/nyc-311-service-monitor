@@ -1,0 +1,22 @@
+{
+  "snapshot_type": "legacy_biased_sample",
+  "status": "Historical stored aggregates; not rebuilt by the September 14 engineering update",
+  "creation_window": {
+    "start_inclusive": "2024-01-01",
+    "end_exclusive": "2024-04-01"
+  },
+  "request_sampling": "Earliest up to 350 records per day ordered by created_date, requiring closed_date IS NOT NULL; not random or representative",
+  "cleaning": "Excluded missing/invalid dates, negative durations, and durations over 45 days",
+  "daily_counts_cohort": "Requests in creation window with closed_date IS NOT NULL; not all requests",
+  "forecast_limitations": "Stored MAPE and flags came from the old procedure; anomalies were calibrated across the scored window",
+  "rows_analyzed_in_stored_metrics": 30626,
+  "source_records_available_for_rebuild": false,
+  "artifact_sha256": {
+    "metrics.json": "e4231198c652752c7dd16236b44fd13736f26ccea7ccf117c9a5f7955b90cb85",
+    "daily_volume_forecast.csv": "369da15ffe2be74556d8780d43499c270113b0ec2d6c6efca698066dd8eece5f",
+    "top_complaints.csv": "8496f24c0efcf7db9cb17fbeac73b3eb5e56e19380d1279ce684e7ee06543080",
+    "top_boroughs.csv": "4b90eecfb5dbea8651eaf25ce180dfb130e27e80627b2ff148d309f8068e77cc",
+    "top_agencies.csv": "fa5b7553bf7005f74c87592009d37fc5502be431c54dbd4463aeae4c9a6006a5"
+  },
+  "allowed_interpretation": "Descriptive legacy sample only; no citywide demand/backlog, first-response or all-request SLA conclusions"
+}

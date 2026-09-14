@@ -1,0 +1,87 @@
+{
+  "generated_at": "2026-09-14T14:53:53.490384+00:00",
+  "provenance": "synthetic_only; no live API calls",
+  "fixture": "nyc311/demo.py::synthetic_rows",
+  "initial_fixture_records": 6,
+  "injected_failure": "second page, after SQL writes and before checkpoint",
+  "after_failure": {
+    "current_requests": 2,
+    "raw_versions": 2,
+    "open_requests": 1,
+    "valid_closed_requests": 1
+  },
+  "after_reopen_and_resume": {
+    "current_requests": 6,
+    "raw_versions": 6,
+    "open_requests": 2,
+    "valid_closed_requests": 2
+  },
+  "after_unchanged_replay": {
+    "current_requests": 6,
+    "raw_versions": 6,
+    "open_requests": 2,
+    "valid_closed_requests": 2
+  },
+  "after_late_record_backfill_and_closure_refresh": {
+    "current_requests": 8,
+    "raw_versions": 9,
+    "open_requests": 3,
+    "valid_closed_requests": 3
+  },
+  "initial_sql_operations": [
+    {
+      "agency": "NYPD",
+      "requests": 3,
+      "open_requests": 2,
+      "valid_closed_requests": 0,
+      "quality_flagged_requests": 1,
+      "mean_closure_hours": null,
+      "closed_within_48h_rate": null
+    },
+    {
+      "agency": "DEP",
+      "requests": 3,
+      "open_requests": 0,
+      "valid_closed_requests": 2,
+      "quality_flagged_requests": 1,
+      "mean_closure_hours": 601.0,
+      "closed_within_48h_rate": 0.5
+    }
+  ],
+  "final_sql_operations": [
+    {
+      "agency": "DEP",
+      "requests": 5,
+      "open_requests": 2,
+      "valid_closed_requests": 2,
+      "quality_flagged_requests": 1,
+      "mean_closure_hours": 601.0,
+      "closed_within_48h_rate": 0.5
+    },
+    {
+      "agency": "NYPD",
+      "requests": 3,
+      "open_requests": 1,
+      "valid_closed_requests": 1,
+      "quality_flagged_requests": 1,
+      "mean_closure_hours": 48.0,
+      "closed_within_48h_rate": 1.0
+    }
+  ],
+  "assertions_passed": true,
+  "source_query_metadata": {
+    "cohort": "all statuses by created_date; no closed_date filter",
+    "end_exclusive": "2024-01-03",
+    "page_size": 2,
+    "pagination": "daily keyset ordered by created_date, text unique_key; no total row cap",
+    "provenance": "hand-authored synthetic test data",
+    "snapshot_isolation": false,
+    "source": "synthetic://six-request-fixture",
+    "start_inclusive": "2024-01-01"
+  },
+  "limitations": [
+    "Small engineering fixture, not NYC findings or load testing.",
+    "Latest observed open counts, not historical backlog snapshots.",
+    "Remote snapshot isolation, deletion capture and automatic scheduling are not implemented."
+  ]
+}
