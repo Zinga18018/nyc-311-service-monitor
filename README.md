@@ -1,5 +1,7 @@
 # NYC 311 Service Monitor
 
+[See the workflow flowchart and code walkthrough](WORKFLOW.md)
+
 This is a Streamlit data science app built on NYC Open Data 311 service
 requests. It looks at request volume, response time, top complaint types,
 borough/agency patterns, and unusual demand spikes.
