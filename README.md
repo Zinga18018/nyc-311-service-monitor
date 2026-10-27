@@ -1,137 +1,87 @@
 # NYC 311 Service Monitor
 
-A service-operations dashboard with a local SQLite warehouse: collect public
-requests, retain source versions, update changed records, and separate demand,
-observed open requests, and time to recorded closure.
+A local SQLite pipeline and Streamlit dashboard for NYC 311 requests. It retains
+source versions, resumes interrupted page loads, and keeps request demand,
+latest observed open status, and time to recorded closure separate.
 
-[Workflow and code map](WORKFLOW.md) | [Metric dictionary](docs/METRICS.md) |
-[Verification evidence](docs/VERIFICATION.md)
+[Workflow and code map](WORKFLOW.md) · [Metric definitions](docs/METRICS.md) ·
+[Verification record](docs/VERIFICATION.md)
 
-## What changed
+## Recovery example—not a city service result
 
-The original fetch selected only closed records and kept the earliest 350 per
-day. The original analysis also removed durations over 45 days. Those choices
-biased closure summaries and could not measure all-request demand or backlog.
+![Synthetic recovery fixture: current requests are 2, 6, 6, 8 and retained raw versions are 2, 6, 6, 9 after failure, resume, replay, and update plus backfill.](docs/images/recovery-fixture.svg)
 
-The new path:
+This plot reads the [committed offline demonstration](outputs/synthetic_warehouse_demo.json).
+Six hand-authored synthetic requests exercise failure, database reopen, resume,
+and unchanged replay. Updating one request and adding two yields eight current
+requests and nine retained versions. It demonstrates fixture behavior, **not NYC
+service performance, throughput, or citywide backlog**.
 
-- Pages through each requested creation day, ordered by creation time and the
-  source's text request ID. There is no daily total-row cap or closed-date filter.
-- Stores immutable raw versions and observation history, then upserts one current
-  row per request ID. Replaying a window does not duplicate current requests.
-- Commits page data, query cursor, and checkpoint in one SQLite transaction.
-  A failed run can resume after the last committed page.
-- Supports overlapping incremental refreshes, explicit historical backfills,
-  and refreshes of older loaded days containing open requests.
-- Exposes daily and agency SQL marts, a metric dictionary, and an investigation
-  readout. Open records stay in demand counts; only valid closed records enter
-  closure-duration statistics. Long durations are retained.
-- Fits the weekday forecast and anomaly calibration on training days only.
-  Holdout days, zero-demand exclusions, and denominators are explicit.
+[Plot source, hashes and reproduction](docs/VISUAL_EVIDENCE.md). The plot uses the
+actual committed-byte hash. Existing legacy provenance hashes match CRLF
+re-encodings rather than the committed LF files; those historical files are
+preserved, not silently corrected.
 
-## What has actually been verified
+## Run the offline demo
 
-The [offline demonstration](outputs/synthetic_warehouse_demo.json) uses **six
-hand-authored synthetic records**. It injects a failure after SQL writes but
-before the second checkpoint, closes and reopens the database, resumes, replays,
-and backfills changed/new records.
+Use Python 3.11 or 3.12 in a virtual environment. From the repository root:
 
-| Checkpoint | Current requests | Raw versions |
-|---|---:|---:|
-| After injected failure | 2 | 2 |
-| After reopen and resume | 6 | 6 |
-| After unchanged replay | 6 | 6 |
-| After closure update plus two new records | 8 | 9 |
-
-**22 local tests passed** on Python 3.11.15, including warehouse recovery, source
-pagination, closure denominators, training-only anomaly calibration, and the
-Streamlit legacy warning/all-open dashboard paths. This is engineering fixture
-evidence, not a scale benchmark or a city service result.
-
-A separate [live query smoke check](outputs/live_api_smoke.json) fetched **four
-records across two pages**. It verified the source's text-ID cursor and no overlap
-between those two pages. **A full live window has not been loaded or verified with
-the new pipeline.** GitHub Actions are configured; a passing hosted run is not
-claimed by this local report.
-
-## Historical dashboard data
-
-The committed `data/processed` and original aggregate `outputs` files are retained
-as a **legacy biased sample**. The stored metrics report 30,626 cleaned records
-and 91 creation days. They are not new pipeline results. Their provenance files
-record the earlier filters, limitations, and hashes of the unchanged artifacts.
-The default dashboard visibly warns about this and shows backlog as unavailable.
-
-Do not use its old 86.37% figure as an all-request SLA rate, its closure duration
-as time to first response, or its old forecast MAPE as validation of this revision.
-
-## Run locally
-
-Use Python 3.11 or 3.12. Install the dependencies in a virtual environment:
-
-```powershell
+```sh
+python -m venv .venv
+# Activate .venv for your shell, then:
 python -m pip install -r requirements.txt
 python -m unittest discover -s tests -v
-python scripts/demo_warehouse.py
+python scripts/demo_warehouse.py --output demo-report.json
 streamlit run app.py
 ```
 
-On the verified Windows host, PyArrow 25.0.1 was blocked by application control;
-PyArrow 19.0.1 imported successfully and was used for dashboard tests. If that
-same environment issue occurs, use the tested version in your project environment:
+The demo uses temporary synthetic SQLite data; it makes no API calls. The default
+dashboard opens the historical aggregates already in the repository—it does not
+show the synthetic recovery fixture as city data. See the
+[verification record](docs/VERIFICATION.md) for the historical Windows/PyArrow
+troubleshooting note.
 
-```powershell
-python -m pip install pyarrow==19.0.1
-```
+## Load a real creation-date window
 
-Load an explicit creation window; the end date is exclusive. The source may rate
-limit requests. `SOCRATA_APP_TOKEN` is optional and is read from the environment.
+This optional command contacts NYC Open Data. The end date is exclusive;
+`SOCRATA_APP_TOKEN` is optional and read from the environment.
 
-```powershell
+```sh
 python scripts/fetch_and_build.py --start 2024-01-01 --end 2024-01-03 --output data/refreshed
-$env:NYC311_DATA_DIR = "data/refreshed"
-streamlit run app.py
 ```
 
-An overlapping next load upserts existing IDs and adds new ones. `--refresh-open`
-also refreshes older loaded creation days with open records:
+Set `NYC311_DATA_DIR=data/refreshed` in your shell before running Streamlit to view
+that output. For example, use `export NYC311_DATA_DIR=data/refreshed` in a POSIX
+shell or `$env:NYC311_DATA_DIR = "data/refreshed"` in PowerShell.
 
-```powershell
-python scripts/fetch_and_build.py --start 2024-01-02 --end 2024-01-04 --refresh-open --output data/refreshed
-```
+The loader pages all statuses, upserts by request ID, and commits each page with
+its restart cursor. Repeat a window for a backfill; add `--refresh-open` to revisit
+older loaded creation days containing open requests. After a failure, use
+`--resume-run RUN_ID` with that run's exact start/end/page-size. Completed run IDs
+are no-ops; omit the flag to observe later source changes.
 
-For a historical backfill, run the desired older range again. After a failure,
-reuse the printed run ID and **that run's exact start/end/page-size**:
+## Evidence and limits
 
-```powershell
-python scripts/fetch_and_build.py --start 2024-01-01 --end 2024-01-03 --page-size 1000 --resume-run RUN_ID --output data/refreshed
-```
+- **The default dashboard is a legacy biased sample.** Detailed records were
+  limited to the earliest 350 closed records/day and cleaned to remove invalid,
+  negative, and over-45-day durations. Daily counts also required a closed date.
+  Its 30,626 cleaned records and 91 days are not new-pipeline results.
+- The old 48-hour percentage is not an all-request SLA rate; recorded closure is
+  not first response or verified resolution. Legacy MAPE and retrospective
+  anomaly flags do not validate the new training-only calibration.
+- The retained [live smoke check](outputs/live_api_smoke.json) covers only four
+  records across two pages. No complete new live window or independent source
+  count reconciliation is documented.
+- Open counts are latest observed statuses in loaded creation cohorts, not
+  historical point-in-time or citywide backlog. The client has no source snapshot
+  isolation or deletion capture. Late inserts and changes to closed requests
+  require explicit backfills; wall-clock durations do not correct for DST.
+- This is a single-operator local project, not a scheduled or managed deployment.
+  Fixture tests do not establish scale, concurrency, or alert quality.
 
-If an optional older-open refresh fails, its printed run has its own one-day
-window. Resume that window, then rerun the intended reporting window. A completed
-run ID is a no-op; use a new run (omit `--resume-run`) to observe later changes.
-
-## Limits and next evidence
-
-This is a single-operator local pipeline. The public source can change while
-pages are read; it offers no snapshot isolation through this client. There is no
-source deletion capture. Late historical inserts and updates to already closed
-requests need explicit backfills; open-cohort refresh alone cannot find them.
-Repeated source windows can contain records observed at different times. Open
-counts describe latest observed statuses in loaded cohorts, not historical
-point-in-time or citywide backlog. Local wall-clock closure differences do not
-correct for daylight-saving transitions.
-
-The next evidence step is a bounded real-window load with independent source
-count reconciliation, later refresh comparison, and documented runtime/failure
-behavior. Scheduling, managed deployment, alert-quality evaluation, and citywide
-coverage remain future work.
-
-## Resume-safe description
-
-> Built a NYC 311 operations monitor with SQLite raw/staging/SQL mart layers,
-> idempotent request upserts, resumable page checkpoints, and historical backfills;
-> verified rollback, recovery, and status updates with synthetic tests and made
-> request-volume and closure-time cohorts explicit.
+[CI passed for the inspected base revision](https://github.com/Zinga18018/nyc-311-service-monitor/actions/runs/34859039455).
+That historical run is not a claim about later changes. The plot's standard-library
+checks run with the unit suite; optional exact rendering needs
+`requirements-visuals.txt`.
 
 Source: [NYC Open Data API documentation](https://dev.socrata.com/foundry/data.cityofnewyork.us/erm2-nwe9).

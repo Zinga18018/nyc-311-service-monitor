@@ -1,0 +1,2 @@
+# Optional README plot reproduction only; not required by the app or unit tests.
+matplotlib==3.10.8
